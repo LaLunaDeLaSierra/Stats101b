@@ -1,0 +1,113 @@
+---
+title: "705604096_stats101b_hw2"
+author: "Jade Gregory"
+date: "2023-08-24"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r}
+idat <- read.csv("101bislandhw2.csv", header = TRUE)
+idat
+```
+
+a)
+![](/Users/jadegregory/Documents/101bhw2ce1.jpg) 
+
+b)
+![](/Users/jadegregory/Documents/101bhw2ce2.jpg)
+
+c)
+```{r}
+idat$difference <- idat$vocal_frequency_after - idat$vocal_frequency_before
+idat$agerange <- cut(idat$age, breaks = c(0, 12, 25, 45, Inf), labels = c("12 & Under", "13-25", "25-45", "45 & Older"))
+boxplot(idat$difference ~ idat$agerange, xlab = "Age Ranges", ylab = "Vocal Frequency Differences")
+```
+
+This plot shows us that the means of each respective age range are relatively similar. This could indicate that the age range brackets do not have a significant effect on the vocal frequency difference in this experiment. For our 12 & Under age group, we see that the vocal frequency difference has a larger range of values than our older groups of ages. It appears that the oldest age range, 45 & Older, has the smallest range of values for vocal frequency difference. 
+
+d)
+```{r}
+idataov <- aov(difference ~ agerange, data = idat)
+summary(idataov)
+```
+
+Our p-value is 0.2 which is greater than our significance level of 0.05 so we fail to reject the null hypothesis stating that there is no significant difference in the means of the age ranges. Therefore, we can conclude that there is evidence to support the idea that age range does not affect vocal frequency difference in our data.
+
+
+## Question 2
+```{r}
+df_er <- 19 - 3
+ss_er <- 196.04 - 36.15
+ms_fac <- 36.15 / 3
+ms_er <- ss_er / df_er
+f <- ms_fac / ms_er
+print(c(df_er, ss_er, ms_fac, ms_er, f))
+p <- 0.339533
+```
+
+DF Error = 16
+SS Error = 159.89
+MS Factor = 12.05
+MS Error = 9.993125
+F = 1.205829
+P = 0.339533
+
+## Question 3
+a)
+```{r}
+q3dat <- read.csv("HW2 Q3 Data Su C 2023.csv", header = TRUE)
+q3aov <- aov(values ~ ind, data = stack(q3dat))
+summary(q3aov)
+```
+
+Since our p-value of 0.281 is greater than our significance level of 0.05, we fail to reject the null hypothesis stating there is no difference in the means of the different factor levels. So, we can conclude that there is no evidence to support a claim that PEMF usage affects BMD loss.
+
+b)
+```{r}
+plot(q3aov)
+```
+
+In our residuals vs fitted plot, we can see our data points are plotted equally and horizontally across the graph with no noticeable trend supporting the idea that the constant variance assumption is held by our model. In our QQ norm plot we observe that the data points tightly follow the dashed line and do not often stray suggesting that our model holds the normality assumption. In our scale location plot our data points are plotted horizontally across the graph with no noticeable pattern further supporting the idea that our constant variance assumption is held by our model. In our residuals vs factor levels plot, we can see that the data points are plotted equally and horizontally across the graph supporting the idea that our model appropriately accounts for the contribution of each factor level in it. Overall, I believe it is safe to conclude that our model is a great fit for our data based off of these graphs. 
+
+## Question 4
+a)
+```{r}
+cotdat <- read.csv("HW2 Q4 data Su C 2023.csv", header = TRUE)
+cotdat$CottonWeight <- as.factor(cotdat$CottonWeight)
+cdataov <- aov(Observations ~ CottonWeight, data = cotdat)
+summary(cdataov)
+```
+
+With a p-value of 9.13e-06 which is less than our significance level of 0.05, we reject our null hypothesis and can conclude that there is evidence to support the claim that cotton contents appear to have an effect on the mean tensile strength. 
+
+b)
+```{r error = TRUE}
+#installing packages 
+install.packages("agricolae")
+```
+
+```{r}
+library(agricolae)
+```
+
+
+```{r}
+print(LSD.test(cdataov, "CottonWeight"))
+```
+
+From our Fisher LSD test we can see that 15% cotton and 35% cotton do not have significantly different mean observations. We also see that 20% cotton and 25% cotton do not have significantly different mean observations, while the rest do have significantly different mean observation values.
+
+c)
+```{r}
+plot(cdataov)
+```
+
+In our residuals vs fitted plot, we can see that our data points are plotted randomly and horizontally across the graph. This supports the idea that the constant variance assumption is held by our model. There may be a parabola like pattern that appears to some, but more data would be needed to be sure. If this is the case, it could potentially affect the constant variance assumption of our model. Our QQ norm plot displays our data points as following the dashed line, though they are not extremely tight to the dashed line they do not stray far from it therefore indicating that our normality assumption is held in our model. Our scale location plot displays out data points plotted equally and horizontally across the graph indicating that our constant variance assumption is held by our model. The residuals vs factor levels graph has our data points plotted equally across the graph indicating that our model accurately accounts for the contribution of each factor level in our model. Overall, I would support the idea that this model is a good fit for our data. 
+
