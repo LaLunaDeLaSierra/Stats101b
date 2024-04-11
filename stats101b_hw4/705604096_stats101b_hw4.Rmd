@@ -1,0 +1,170 @@
+---
+title: "705604096_stats101b_hw4"
+author: "Jade Gregory"
+date: "2023-09-15"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(lme4)
+```
+
+## Question 1
+
+```{r}
+q1dat <- read.csv("HW4 Question 6-1 Su C 2023.csv")
+head(q1dat)
+```
+
+a)
+```{r}
+lm1 <- lm(Life.Hours ~ Cutting.Speed * Tool.Geometry * Cutting.Angle, data = q1dat)
+summary(lm1)
+```
+
+From our summary of our linear model, we can see that B, C, and AC are significant factors in our model. Factor B refers to the variable Tool.Geometry with a p-value of 0.000117 which is less than our significance level of 0.05 making it significant. Factor C refers to our Cutting.Angle variable with a p-value of 0.007679 which is less than our significance level of 0.05 making it significant as well. The AC factor refers to our Cutting.Speed:Cutting.Angle variable that has a p-value of 0.001172 which is less than the significance level of 0.05 making it significant as well. Also, the Estimate values for B, C, and AC are significantly greater than the values of the rest of the factors. 
+
+b)
+```{r}
+anova(lm1)
+```
+
+From our anova, we can conclude that our results in part (a) are supported from this output, as the same factors, B, C, and AC, are significant. 
+
+c)
+```{r}
+q1lm <- lm(Life.Hours ~ Cutting.Speed + Tool.Geometry + Cutting.Angle + Cutting.Speed:Cutting.Angle, data = q1dat)
+summary(q1lm)
+```
+
+Our final regression equation is $$y = 0.1667x_A + 5.6667x_B + 3.4167x_C - 4.4167x_Ax_C + 40.8333$$ This was determined from the significant factors from our previous tests. We must include factor A in our model as well since it is included in the significant factor AC.
+
+d)
+```{r}
+plot(q1lm, which = c(1, 2))
+```
+
+In our residuals vs fitted plot we can see that our data points are plotted evenly and horizontally across the graph with no noticeable pattern. This indicates that our constant variance assumption is held by our model. In our QQ norm plot we see that our data points are plotted following the dashed line tightly with slight variation at the tails of the dashed line. Since the data points do not stray far from the dashed line we can conclude that our normality assumption is held by our model. From these two graph we can conclude that our model accurately represents our data and our residuals do not have any obvious problems.
+
+e)
+```{r}
+ggplot() + aes(x = q1dat$Cutting.Speed, color = q1dat$Cutting.Angle,
+               group = q1dat$Cutting.Angle, y = q1dat$Life.Hours) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line") +
+  labs(title = "Interaction Plot", x = "Cutting Speed", y = "Life Hours") + 
+  theme_classic()
+```
+
+```{r}
+ggplot() + aes(x = q1dat$Tool.Geometry, color = q1dat$Tool.Geometry,
+              y = q1dat$Life.Hours) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line") +
+  labs(title = "One Factor Plot", x = "Tool Geometry", y = "Life Hours") + 
+  theme_classic()
+```
+
+In our interaction plots we can determine the recommended coded factor levels for A, B, and C. In our first plot, we can see that starting factor A at a lower level will maximize itself as well as factor C as it has a generally positive trend in the graph. Therefore, we should start factor A at a lower level and start factor C at a higher level. In our second plot, we can see that factor B has a generally positive trend so we should start it at a higher level to maximize life hours. 
+
+## Question 2
+```{r}
+q2dat <- read.csv("HW4 Question 6-21 Su C 2023.csv")
+q2dat$Length.of.Putt <- as.factor(q2dat$Length.of.Putt)
+q2dat$Type.of.Putter <- as.factor(q2dat$Type.of.Putter)
+q2dat$Break.of.Putt <- as.factor(q2dat$Break.of.Putt)
+q2dat$Slope.of.Putt <- as.factor(q2dat$Slope.of.Putt)
+head(q2dat)
+```
+
+a)
+```{r}
+lm2 <- lm(Distance.from.Cup ~ Length.of.Putt * Type.of.Putter * Break.of.Putt * Slope.of.Putt, data = q2dat)
+summary(lm2)
+summary(aov(lm2))
+```
+
+From our output, we can conclude that the only two significant factors affecting putting performance include Length.of.Putt and Type.of.Putter. In both of the summaries, these variables had respective p-values that were less than our significance level of 0.05 resulting in these variables being deemed significant in our model. 
+
+b)
+```{r}
+plot(lm(Distance.from.Cup ~ Type.of.Putter + Length.of.Putt, data = q2dat))
+```
+
+In our residuals vs fitted plot, we can see that our data points are plotted horizontally across our graph with no noticeable pattern indicating that our model holds the constant variance assumption. In our QQ norm plot we can see that the plotted data points mainly follow the dashed line, but stray further from this line as our positive trend increases. This could indicate that our model does not hold the normality assumption, so further investigation on this would be needed to come to a conclusion. Our scale location plot also has data points plotted horizontally across our graph with no noticeable pattern further indicating that our model holds the constant variance assumption. From this, I would conclude that there is evidence of inadequacy of our model. 
+
+## Question 3
+```{r}
+q3dat <- read.csv("HW4 Question 15-21 Su C 2023.csv")
+q3dat$Judge <- as.factor(q3dat$Judge)
+q3dat$Wine <- as.factor(q3dat$Wine)
+head(q3dat)
+```
+
+```{r}
+lm3 <- lm(Wine.Quality ~ Judge + Wine, data = q3dat)
+plot(lm3)
+summary(aov(lm3))
+```
+
+From our anova analysis, we see that our Wine variable has a p-value of 8.04e-07 which is less than our significance level of 0.05, meaning that we reject our null hypothesis that states there is no difference among the sample means and can conclude that there is a difference in wine quality.
+
+Analyzing the residual plots, we can form a conclusion on the model adequacy. In our residuals vs fitted plot, we can see that the data points are plotted randomly and evenly across the graph horizontally with no noticeable pattern. This indicates that our model holds the constant variance assumption. In our QQ norm plot, we can see that the data points are plotted tightly along the dashed line suggesting that out model holds the normality assumption. Our scale location plot has data points plotted randomly and horizontally across the graph with no noticeable pattern further suggesting that our model holds the constant variance assumption. Our residuals vs factor levels plot is interesting as it has data points plotted in between the blocking factors, but since the Judge variable is considered a blocking factor this does not harm our model. Overall, our model appeears to be adequate for our data. 
+
+## Question 4
+```{r}
+q4dat <- read.csv("HW4 Question 3-54 Su C 2023.csv")
+q4dat$Loom <- as.factor(q4dat$Loom)
+head(q4dat)
+aggregate(q4dat$Output ~ q4dat$Loom, FUN = mean)
+```
+
+a)
+```{r}
+TukeyHSD(aov(q4dat$Output ~ q4dat$Loom), conf.level = 0.95)
+```
+
+This is a random effects experiment because all five looms were randomly selected amongst the whole population of the textile mills looms. From our TukeyHSD output we can see that some of the pairwise comparisons do not contain zero in their bounds, indicating that not all looms are equal in output. 
+
+b)
+```{r}
+lm4 <- lm(Output ~ Loom, data = q4dat)
+summary(aov(lm4))
+(0.0854 - 0.0148)/5
+```
+From our anova output, we can see that our variability between looms is (0.0854 - 0.0148)/5 which results in a final value of 0.01412.
+
+c)
+Using our output from part (b) we can see that our experimental error variance is 0.0148.
+
+d)
+```{r}
+icc <- 0.0854 / (0.0854 + 0.0148)
+icc
+```
+
+The ICC has a value of 0.8522954. 
+
+e)
+```{r}
+plot(lm4)
+```
+
+From our residuals vs fitted plot, the data points are plotted horizontally across the graph with no noticeable pattern suggesting that our model holds the constant variance assumption. In our QQ norm plot, we see that the data points are plotted tightly along the dashed line suggesting that our normality assumption is held by our model. In our scale location plot, we see our data points plotted horizontally across the graph with no noticeable pattern further suggesting that our model holds the constant variance assumption. In our residuals vs factor levels plot, we can see that each factor level is represented accurately in our model. Overall, this model is quite adequate for our data. 
+
+f)
+```{r}
+lm4_f <- lmer(Output ~ (1|Loom), data = q4dat)
+summary(lm4_f)
+```
+```{r}
+logLik(lm4)
+logLik(lm4_f)
+2*(19.97993 - 11.38814)
+1 - pchisq(17.18358, 3)
+```
+Our REML test produces similar figures derived from the output of our ANOVA test. From our chi squared test we can conclude that our model fitted with random effects does provide a significant difference from our original linear model. 
