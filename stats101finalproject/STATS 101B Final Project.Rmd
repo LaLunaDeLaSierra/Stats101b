@@ -1,0 +1,109 @@
+---
+title: "STATS 101B Final Project"
+author: "Rachel Stokol"
+date: '2023-09-15'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+exp_data <- read.csv("survey_101b_project - Data.csv")
+exp_data$Age_Group <- as.factor(exp_data$Age_Group)
+```
+
+## Interaction Plots
+```{r}
+ggplot(exp_data) + 
+    aes(x = Gender, color = Age_Group, group = Age_Group, y = Change_in_Adr) + 
+    stat_summary(fun = mean, geom = "point") +
+    stat_summary(fun = mean, geom = "line") +
+    ggtitle("Interaction Plot: Change in Adrenaline") +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    labs(color = "Age Block") +
+    ylab("Change in Adrenaline")
+
+ggplot(exp_data) + 
+    aes(x = Gender, color = Age_Group, group = Age_Group, y = Change_in_P) + 
+    stat_summary(fun = mean, geom = "point") +
+    stat_summary(fun = mean, geom = "line") +
+    ggtitle("Interaction Plot: Change in Pulse") +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    labs(color = "Age Block") +
+    ylab("Change in Pulse")
+```
+
+## Boxplots
+```{r}
+ggplot(exp_data, aes(x = Age_Group, y = Change_in_Adr)) + 
+  geom_boxplot() +
+  ggtitle("Change in Adrenaline by Age Group") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ylab("Change in Adrenaline") +
+  xlab("Age Group") +
+  scale_x_discrete(labels = c("0 - 20", "21 - 40", "41 - 60", "60+"))
+
+ggplot(exp_data, aes(x = Gender, y = Change_in_Adr)) + 
+  geom_boxplot() +
+  ggtitle("Change in Adrenaline by Gender") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ylab("Change in Adrenaline") +
+  xlab("Gender") +
+  scale_x_discrete(labels = c("Female", "Male"))
+
+ggplot(exp_data, aes(x = Age_Group, y = Change_in_P)) + 
+  geom_boxplot() +
+  ggtitle("Change in Pulse by Age Group") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ylab("Change in Pulse") +
+  xlab("Age Group") +
+  scale_x_discrete(labels = c("0 - 20", "21 - 40", "41 - 60", "60+"))
+
+ggplot(exp_data, aes(x = Gender, y = Change_in_P)) + 
+  geom_boxplot() +
+  ggtitle("Change in Pulse by Gender") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ylab("Change in Pulse") +
+  xlab("Gender") +
+  scale_x_discrete(labels = c("Female", "Male"))
+```
+
+## ANOVA
+```{r}
+aov1 <- aov(Change_in_Adr ~ Gender + Age_Group, data = exp_data)
+summary(aov1)
+
+aov2 <- aov(Change_in_P ~ Gender + Age_Group, data = exp_data)
+summary(aov2)
+```
+
+
+```{r}
+TukeyHSD(aov1)
+plot(TukeyHSD(aov1))
+```
+
+```{r}
+TukeyHSD(aov2)
+plot(TukeyHSD(aov2))
+```
+
+```{r}
+library(ggfortify)
+```
+
+
+```{r}
+autoplot(aov1)
+```
+
+```{r}
+autoplot(aov2)
+```
+
+
