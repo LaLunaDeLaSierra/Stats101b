@@ -1,0 +1,146 @@
+---
+title: "705604096_stats101b_hw3"
+author: "Jade Gregory"
+date: "2023-08-31"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## Question 1
+```{r}
+compdat <- read.csv("data Readtexts paper vs ereader Article.csv")
+head(compdat)
+```
+
+a) 
+The variables measured in this study include:
+- Response Variables: Vocabulary pretest score, word chain test score, reading comprehension pretest score
+- Factors: Condition (paper or computer texts)
+- Blocks: School, Sex
+- Held Constant: Grade level, country
+- If I were to conduct my own experiment of this nature, I would increase the sample size for the study. This would provide us with a more accurate representation of our population. I would also expand the study to include participants from many other schools and possible age ranges, to account for the fact that different ages may have different reading comprehension levels. I would also include the same number of each group in my study, including the number of boys and girls surveyed as well as each number of boys and girls who participate in the electronic readings as well as the paper readings. 
+
+b)
+```{r}
+nrow(compdat)
+```
+
+There were 72 participants in this study. This was not enough people for this study. From the G*Power app, we find that the power associated with this sample size and the effect size -0.02 is 0.0588106. The power associated with this sample size and the effect size of -0.03 is 0.0636510. The power associated with this sample size and the effect size of 0.06 is 0.0800399. Because we have such small power values, I believe we should have more participants in this study.
+
+![Distribution Plot for effective size = -0.02](/Users/jadegregory/Documents/distributionplot02.jpeg)
+
+![Distribution Plot for effective size = -0.03](/Users/jadegregory/Documents/distributionplot03.jpeg)
+
+![Distribution Plot for effective size = 0.06](/Users/jadegregory/Documents/distributionplot06.jpeg)
+
+
+c) When the author says "With respect to reliability, all texts used in this study, both for
+pretesting and in the main survey had Cronbach’s alpha >.75" they are referring to the measure of reliability also known as internal consistency. This explains how efficiently a test is measuring what it intends to be measuring. A reliability of >0.75 is a good reliability for an experiment. 
+
+d)
+```{r}
+t.test(compdat$Controlsum ~ compdat$Condition, var.equal = TRUE)
+```
+
+This is our t test involving variables Controlsum and Condition. From our p-value of 0.931 which is greater than our significance level of 0.05, we fail to reject our null hypotehsis stating that the difference of the group means is zero.
+
+```{r}
+t.test(compdat$Vocabulary ~ compdat$Condition, var.equal = TRUE)
+```
+
+This is our t test involving variables Vocabulary and Condition. From our p-value of 0.8881 which is greater than our significance level of 0.05, we fail to reject our null hypothesis stating that the difference in the group means in zero.
+
+```{r}
+t.test(compdat$Wordchain ~ compdat$Condition, var.equal = TRUE)
+ggplot() + aes(x = compdat$Sex, color = compdat$Condition,
+               group = compdat$Condition, y = compdat$Wordchain) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line")
+  
+```
+
+This is our t test involving variables Wordchain and Condition. Since our p-value is 0.8035 which is greater than our significance level of 0.05, we fail to reject our null hypothesis stating that the difference of the two group means is zero. From our interaction plot, we can see that the two lines involving word chain comprehension and condition intersect. This would lead us to believe that there may be interaction amongst these variables, and we should investigate them further in our analysis. 
+
+e)
+```{r}
+#model including Vocabulary, Word reading, and Reading comprehension pretest
+m1 <- lm(TotalSum_Readingcompr ~ Vocabulary + Wordchain + Controlsum, data = compdat)
+summary(m1)
+```
+
+```{r}
+#model including Vocabulary, Word reading, Reading comprehension pretest, and Sex
+m2 <- lm(TotalSum_Readingcompr ~ Vocabulary + Wordchain + Controlsum + Sex, data = compdat)
+summary(m2)
+```
+
+```{r}
+#model including Vocabulary, Word reading, Reading comprehension pretest, Sex, and Reading modality
+m3 <- lm(TotalSum_Readingcompr ~ Vocabulary + Wordchain + Controlsum + Sex + Condition, data = compdat)
+summary(m3)
+```
+
+```{r}
+#partial f test for m1 and m2 and m3
+anova(m1, m2, m3)
+```
+
+```{r}
+#partial f test comparing m1 and m3
+anova(m1, m3)
+```
+
+From our anova of all three models, we can see that m3 has a p-value of 0.02532 which is less than our significance level of 0.05, making this model statistically significant compared to our m2 which has a p-value of 0.10995 which is greater than our significance level of 0.05. Because of this, we can then compare m3 directly to m1 to see how it holds. Again, the m3 model is statistically significant with a p-value of 0.02438 being less than the significance level of 0.05. Now we can conclude that our final model from our MLR is m3 which includes the variables TotalSum_Readingcompr ~ Vocabulary + Wordchain + Controlsum + Sex + Condition. 
+
+```{r}
+plot(m3)
+```
+
+In our residuals vs fitted plot for the m3 model, we can see that the data points are plotted horizontally across the graph. We do notice a fan pattern emerge from the graph which can indicate that the constant variance assumption is not held by our model. In the QQ norm plot for the m3 model we can see that the data points follow the dashed line tightly and stray at the ends of the graph, indicating that our normality assumption is held by our model. Our scale location plot has data points plotted horizontally across the graph, but there is a noticeable decreasing trend amongst them further supporting the idea that the constant variance assumption is not held by this model. In our residuals vs leverage plot we can see that the data points are plotted equally and horizontally across the graph with no noticeable points residing in the Cook's distance portion of the graph. We can further assume that there are not many outliers or influential points in this data. Overall, we can conclude that the model most likely holds the normality assumption but the constant variance assumption must be analyzed further. 
+
+## Question 2
+a)
+```{r}
+baldness <- read.delim2("Ch 8 HeartDiseaseBaldness.txt")
+head(baldness)
+```
+
+b)
+```{r}
+dim(baldness)
+```
+
+The baldness data frame has the dimensions of 2 columns and 1435 rows.
+
+c)
+The names of the variables in the data include Heart_Disease and Baldness.
+
+d)
+The null hypothesis states that the two variables do not have a significant relationship to one another and the alternative hypothesis states that the two variables do have a significant relationship to one another.
+
+e)
+```{r}
+table(baldness)
+```
+
+f)
+```{r}
+barplot(table(baldness$Heart_Disease))
+barplot(table(baldness$Baldness))
+ggplot(baldness, aes(fill = Heart_Disease, y = "Heart Disease", x = Baldness)) +
+  geom_bar(position = "stack", stat = "identity")
+```
+
+g)
+```{r}
+chisq.test(table(baldness))
+```
+
+Since our p-value of 0.002287 is less than our significance level of 0.05, it is significant and we reject our null hypothesis and can conclude that there is evidence to support the idea that the two variables, Heart_Disease and Baldness are related to one another. 
+
